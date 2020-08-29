@@ -4,7 +4,12 @@
 
 *(Pronounced "web glip", "web glap"?)*
 
-## How it works
+## Install
+
+* Clone the repo and use `webglp.js`, or...
+* npm install https://github.com/rocket-boots/webglp#master (can replace *master* with a release version)
+
+## How to Use it
 
 Put a canvas in your HTML: `<canvas id="canvas"></canvas>`.
 
@@ -39,9 +44,9 @@ When it is time to render (usually inside a `requestAnimationFrame` loop), you'l
 
 ```js
 	const uniforms = [
-		['viewerPosition', x, y, z],
+		['viewerPosition', x, y, z], // vec3
 		['iTime', t],
-		['iResolution', gl.canvas.width, gl.canvas.height],
+		['iResolution', gl.canvas.width, gl.canvas.height], // vec2
 		// etc.
 	];
 	// If you have only one program:
@@ -60,7 +65,7 @@ When it is time to render (usually inside a `requestAnimationFrame` loop), you'l
 
 ## Inspiration
 
-Thanks to https://xem.github.io/articles/webgl-guide.html and https://github.com/xem/webgl-guide/blob/gh-pages/lib/webgl.js
+Thanks to Xem's excellent webGL guide: https://xem.github.io/articles/webgl-guide.html and https://github.com/xem/webgl-guide/blob/gh-pages/lib/webgl.js
 
 ## In Use
 
