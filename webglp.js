@@ -1,14 +1,16 @@
-const SCREEN_TRIANGLE_VERTS = new Float32Array([
+/** STV = Screen Triangle Vertices */
+const STV = new Float32Array([
 	-1, -1, // first triangle
 	1, -1,
 	-1, 1,
 	-1, 1, // second triangle
 	1, -1,
 	1, 1,
-]),
-SCREEN_TRIANGLES_NUMBERS_PER_VERTEX = 2;
+]);
+/** Screen Triangles Numbers per vertex */
+const STNPV = 2;
 
-class GLP {
+class Glp {
 	constructor(gl, p) {
 		Object.assign(this, {
 			gl, // webgl rendering context object
@@ -56,8 +58,8 @@ class GLP {
 		uniforms = [],
 		i = this.i,
 		buffName = 'position',
-		verts = SCREEN_TRIANGLE_VERTS,
-		numbersPerVertex = SCREEN_TRIANGLES_NUMBERS_PER_VERTEX,
+		verts = STV,
+		numbersPerVertex = STNPV,
 		verticesToDraw,
 		type = this.gl.TRIANGLES,
 		clear = true,
@@ -79,9 +81,9 @@ class GLP {
 }
 
 const webglp = {
-	GLP,
-	SCREEN_TRIANGLE_VERTS,
-	SCREEN_TRIANGLES_NUMBERS_PER_VERTEX,
+	Glp,
+	STV,
+	STNPV,
 	getRenderingContext: (selector, antialias = false) => {
 		const canvas = document.querySelector(selector);
 		const gl = canvas.getContext('webgl', { antialias }); // Get the WebGL rendering context
@@ -165,7 +167,7 @@ const webglp = {
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
 	// First param can either be a selector or a GL object
-	init: async (a, urlsArr) => {
+	init: async (a, urlsArr, { fullscreen }) => {
 		const gl = (typeof a === 'string') ? webglp.getRenderingContext(a) : a;
 		// Do aliases?
 		// const aliases = {attachShader: 'aS'};
@@ -178,7 +180,10 @@ const webglp = {
 		const programs = await Promise.all(promises);
 		// const program = await webglp.loadShaders(urlsArr[0]).then((s) => webglp.compile(gl, s));
 		// console.log(programs);
-		return new GLP(gl, programs);
+		if (fullscreen) {
+			webglp.fullscreen(gl);
+		}
+		return new Glp(gl, programs);
 	}
 };
 

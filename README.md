@@ -1,6 +1,6 @@
 # webglp
 
-**A small, simple webGL library to setup and rendering multiple programs**
+**A small, simple webGL library to setup and render multiple GLSL programs**
 
 *webglp = Web Graphic Language Program library (Pronounced "web glip", "web glap"?)*
 
@@ -17,11 +17,17 @@ Put a canvas in your HTML: `<canvas id="canvas"></canvas>`.
 
 Put your shaders into `.glsl` files. You'll need at least one vertex shader and one fragment shader. 
 
-Import `webglp` and define your shaders in an array:
+Import `webglp` and 
 
 ```js
 import webglp from './webglp.js';
+```
 
+The `webglp` object contains a number of helpful functions, some constants, and a `Glp` class (with its own helpful methods).
+
+Define your shaders in an array:
+
+```js
 const SHADERS = [
 	['./vert-shader-1.glsl', './frag-shader-1.glsl'], // 0
 	['./vert-shader-2.glsl', './frag-shader-2.glsl'], // 1
