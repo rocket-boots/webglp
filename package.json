@@ -1,0 +1,22 @@
+{
+  "name": "webglp",
+  "version": "0.1.0",
+  "description": "webGL setup and rendering",
+  "main": "webglp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rocket-boots/webglp.git"
+  },
+  "keywords": [
+    "webGL"
+  ],
+  "author": "Luke Nickerson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rocket-boots/webglp/issues"
+  },
+  "homepage": "https://github.com/rocket-boots/webglp#readme"
+}
