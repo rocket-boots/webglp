@@ -54,25 +54,26 @@ class Glp {
 		// this.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the canvas AND the depth buffer.
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 	}
+	/** size = how many numbers per vertex */
 	draw({
 		uniforms = [],
 		i = this.i,
 		buffName = 'position',
 		verts = STV,
-		numbersPerVertex = STNPV,
-		verticesToDraw,
+		vertSize = STNPV,
+		vertsToDraw,
 		type = this.gl.TRIANGLES,
 		clear = true,
 	}) {
 		const o = this;
 		o.use(i);
 		o.ua(...uniforms);
-		o.buff(buffName, verts, numbersPerVertex);
+		o.buff(buffName, verts, vertSize);
 		if (clear) { o.clear(); }
-		if (verticesToDraw === undefined) {
-			verticesToDraw = verts.length / numbersPerVertex;
+		if (vertsToDraw === undefined) {
+			vertsToDraw = verts.length / vertSize;
 		}
-		o.gl.drawArrays(type, 0, verticesToDraw);
+		o.gl.drawArrays(type, 0, vertsToDraw);
 		return o;
 	}
 	drawAll(uniforms) { // only works with changing uniforms right now
