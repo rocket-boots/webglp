@@ -2,12 +2,14 @@
 
 **A small, simple webGL library to setup and rendering multiple programs**
 
-*(Pronounced "web glip", "web glap"?)*
+*webglp = Web Graphic Language Program library (Pronounced "web glip", "web glap"?)*
 
 ## Install
 
 * Clone the repo and use `webglp.js`, or...
-* npm install https://github.com/rocket-boots/webglp#master (can replace *master* with a release version)
+* Using npm: `npm install https://github.com/rocket-boots/webglp#master` (can replace *master* with a release version)
+
+webglp has *no* dependencies.
 
 ## How to Use it
 
