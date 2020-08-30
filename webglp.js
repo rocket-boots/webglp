@@ -65,7 +65,7 @@ class Glp {
 		data,
 		{
 			size = STNPV, // # of components per iteration
-			type = gl.FLOAT, // what type is the data?
+			type = this.gl.FLOAT, // what type is the data?
 			norm = false, // don't normalize the data
 			stride = 0, // offset in bytes (0 = move forward size * sizeof(type) each iteration to get the next position)
 			offset = 0, // start at beginning of buffer
