@@ -68,6 +68,8 @@ class Glp {
 		const o = this;
 		o.use(i);
 		o.ua(...uniforms);
+		// TODO: default or no?
+		if (buffName) o.buff(buffName, verts, vertSize);
 		o.buff(buffName, verts, vertSize);
 		if (clear) { o.clear(); }
 		if (vertsToDraw === undefined) {
@@ -152,18 +154,19 @@ const webglp = {
 
 		return program;
 	},
-	buffer: (gl, data, program, attr, size, type) => {
+	buffer: (gl, program, attr, data, {
+		size = STNPV, // # of components per iteration
+		type = gl.FLOAT, // what type is the data?
+		norm = false, // don't normalize the data
+		stride = 0, // offset in bytes (0 = move forward size * sizeof(type) each iteration to get the next position)
+		offset = 0, // start at beginning of buffer
+	}) => {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-		const pos = (typeof attr === 'string') ? gl.getAttribLocation(program, attr) : attr;
-		gl.vertexAttribPointer(
-			pos,	// position attribute location
-			size,	// # of components per iteration
-			type,	// what type is the data?
-			false,	// don't normalize the data
-			0,		// 0 = move forward size * sizeof(type) each iteration to get the next position
-			0,		// start at beginning of the buffer
-		);
+		// Get the position attribute location (an id)
+		const id = (typeof attr === 'string') ? gl.getAttribLocation(program, attr) : attr;
+		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
+		gl.vertexAttribPointer(id,	size, type,	norm, stride, offset);
 		gl.enableVertexAttribArray(pos);
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
