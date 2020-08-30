@@ -47,8 +47,8 @@ class Glp {
 	ua(...a) {
 		a.forEach(u => this.unif(...u));
 	}
-	buff(name, data, size, type = this.gl.FLOAT) {
-		return webglp.buffer(this.gl, data, this.p[this.i], name, size, type);
+	buff(name, data, options) {
+		return webglp.buff(this.gl, this.p[this.i], name, data, options);
 	}
 	clear() {
 		this.gl.clearColor(0., 0., 0., 1.); // Set the clear color (black)
@@ -155,7 +155,7 @@ const webglp = {
 
 		return program;
 	},
-	buffer: (gl, program, attr, data, {
+	buff: (gl, program, attr, data, {
 		size = STNPV, // # of components per iteration
 		type = gl.FLOAT, // what type is the data?
 		norm = false, // don't normalize the data
@@ -164,10 +164,11 @@ const webglp = {
 	}) => {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+		const FSIZE = verticesColors.BYTES_PER_ELEMENT;
 		// Get the position attribute location (an id)
 		const id = (typeof attr === 'string') ? gl.getAttribLocation(program, attr) : attr;
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
-		gl.vertexAttribPointer(id,	size, type,	norm, stride, offset);
+		gl.vertexAttribPointer(id,	size, type,	norm, stride * FSIZE, offset * FSIZE);
 		gl.enableVertexAttribArray(id);
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
