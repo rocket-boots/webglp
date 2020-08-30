@@ -57,16 +57,20 @@ When it is time to render (usually inside a `requestAnimationFrame` loop), you'l
 		['iResolution', gl.canvas.width, gl.canvas.height], // vec2
 		// etc.
 	];
+	const verts = new Float32Array([ 0, 0, /* ... */]);
+	const buffs = [
+		['position', { size: 2 }],
+	];
 	// If you have only one program:
-	glp.draw({ uniforms, /* other options */ });
+	glp.draw({ uniforms, buffs, verts, /* other options */ });
 	// Draw can be chained for multiple programs:
-	glp.draw({ uniforms, i: 0 })
-		.draw({ uniforms, i: 1, clear: false })
-		.draw({ uniforms, i: 2, clear: false });
+	glp.draw({ uniforms, buffs, verts, i: 0 })
+		.draw({ uniforms, buffs, verts, i: 1, clear: false })
+		.draw({ uniforms, buffs, verts, i: 2, clear: false });
 	// If you have multiple programs and are doing everything
 	// with two screen triangles (i.e., for implementations
 	// like seen in ShaderToys) then you can use this:
-	glp.drawAll(uniforms);
+	glp.drawAll({ uniforms, buffs });
 ```
 
 **But that's not all!** There are also methods for adding attributes, buffers, etc. See the source for more details.

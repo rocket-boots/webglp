@@ -118,8 +118,8 @@ class Glp {
 		o.gl.drawArrays(type, 0, vertsToDraw);
 		return o;
 	}
-	drawAll(uniforms, buffs) { // only works with changing uniforms right now
-		this.p.forEach((p, i) => this.draw({ uniforms, buffs, i, clear: !i }));
+	drawAll(opt = {}) {
+		this.p.forEach((p, i) => this.draw(Object.assign({ i, clear: !i }, opt)));
 	}
 }
 
