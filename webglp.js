@@ -29,26 +29,60 @@ class Glp {
 		this.gl.useProgram(this.p[i]);
 		return this;
 	}
+	// cp() { // current program
+	// 	return this.p[this.i];
+	// }
+
+	/** Generic setting function -- v = variable storage property, g = get location GL function name, f = set GL function, n = name, a = arguments */
+	v(v, g, f, n, a) {
+		const o = this;
+		const u = o[v][o.i][n] || o.gl[g](o.p[o.i], n); // get from storage or get location from GL
+		o.gl[`${f}${a.length}f`](u, ...a); // set the values
+		return o[v][this.i][n] = u; // store values and return
+	}
 	// An attribute is variable and can contain a float or a vector (vec2, vec3, vec4).
 	// Your program should not exceed 16 attributes to work on all devices.
 	attr(name, ...args) {
-		const a = this.aV[this.i][name] || this.gl.getAttribLocation(this.p[this.i], name);
-		this.gl[`vertexAttrib${args.length}f`](a, ...args);
-		return this.aV[this.i][name] = a;
+		return this.v('aV', 'getAttribLocation', 'vertexAttrib');
+		// const a = this.aV[this.i][name] || this.gl.getAttribLocation(this.p[this.i], name);
+		// this.gl[`vertexAttrib${args.length}f`](a, ...args);
+		// return this.aV[this.i][name] = a;
 	}
 	// A uniform is constant can contain an int, a float, a vector or a matrix (mat2, mat3, mat4).
 	// Your program should not exceed 128 vertex uniforms and 64 fragment uniforms.
 	unif(name, ...args) {
-		const u = this.uV[this.i][name] || this.gl.getUniformLocation(this.p[this.i], name);
-		this.gl[`uniform${args.length}f`](u, ...args);
-		return this.uV[this.i][name] = u;
+		return this.v('uV', 'getUniformLocation', 'uniform');
+		// const u = this.uV[this.i][name] || this.gl.getUniformLocation(this.p[this.i], name);
+		// this.gl[`uniform${args.length}f`](u, ...args);
+		// return this.uV[this.i][name] = u;
 	}
 	// Set Uniforms from an array
 	ua(...a) {
 		a.forEach(u => this.unif(...u));
 	}
-	buff(name, data, options) {
-		return webglp.buff(this.gl, this.p[this.i], name, data, options);
+	buff(
+		attr,
+		data,
+		{
+			size = STNPV, // # of components per iteration
+			type = gl.FLOAT, // what type is the data?
+			norm = false, // don't normalize the data
+			stride = 0, // offset in bytes (0 = move forward size * sizeof(type) each iteration to get the next position)
+			offset = 0, // start at beginning of buffer
+		}
+	) {
+		const {gl,p} = this;
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+		const FSIZE = verticesColors.BYTES_PER_ELEMENT;
+		// Get the position attribute location (an id)
+		const id = gl.getAttribLocation(p[this.i], attr);
+		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
+		gl.vertexAttribPointer(id,	size, type,	norm, stride * FSIZE, offset * FSIZE);
+		gl.enableVertexAttribArray(id);
+	}
+	ba(...a) {
+		// TODO
 	}
 	clear() {
 		this.gl.clearColor(0., 0., 0., 1.); // Set the clear color (black)
@@ -59,7 +93,7 @@ class Glp {
 	draw({
 		uniforms = [],
 		i = this.i,
-		buffName = 'position',
+		buffName, // = 'position',
 		verts = STV,
 		vertSize = STNPV,
 		vertsToDraw,
@@ -69,9 +103,9 @@ class Glp {
 		const o = this;
 		o.use(i);
 		o.ua(...uniforms);
-		// TODO: default or no?
+		// TODO: convert to use "ba" to allow for setting buffers via an array
 		if (buffName) o.buff(buffName, verts, vertSize);
-		o.buff(buffName, verts, vertSize);
+		// o.buff(buffName, verts, vertSize);
 		if (clear) { o.clear(); }
 		if (vertsToDraw === undefined) {
 			vertsToDraw = verts.length / vertSize;
@@ -154,22 +188,6 @@ const webglp = {
 		log('program:', gl.getProgramInfoLog(program) || 'OK');
 
 		return program;
-	},
-	buff: (gl, program, attr, data, {
-		size = STNPV, // # of components per iteration
-		type = gl.FLOAT, // what type is the data?
-		norm = false, // don't normalize the data
-		stride = 0, // offset in bytes (0 = move forward size * sizeof(type) each iteration to get the next position)
-		offset = 0, // start at beginning of buffer
-	}) => {
-		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-		const FSIZE = verticesColors.BYTES_PER_ELEMENT;
-		// Get the position attribute location (an id)
-		const id = (typeof attr === 'string') ? gl.getAttribLocation(program, attr) : attr;
-		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
-		gl.vertexAttribPointer(id,	size, type,	norm, stride * FSIZE, offset * FSIZE);
-		gl.enableVertexAttribArray(id);
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
 	// First param can either be a selector or a GL object
