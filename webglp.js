@@ -43,7 +43,7 @@ class Glp {
 	// An attribute is variable and can contain a float or a vector (vec2, vec3, vec4).
 	// Your program should not exceed 16 attributes to work on all devices.
 	attr(name, ...args) {
-		return this.v('aV', 'getAttribLocation', 'vertexAttrib');
+		return this.v('aV', 'getAttribLocation', 'vertexAttrib', name, args);
 		// const a = this.aV[this.i][name] || this.gl.getAttribLocation(this.p[this.i], name);
 		// this.gl[`vertexAttrib${args.length}f`](a, ...args);
 		// return this.aV[this.i][name] = a;
@@ -51,13 +51,13 @@ class Glp {
 	// A uniform is constant can contain an int, a float, a vector or a matrix (mat2, mat3, mat4).
 	// Your program should not exceed 128 vertex uniforms and 64 fragment uniforms.
 	unif(name, ...args) {
-		return this.v('uV', 'getUniformLocation', 'uniform');
+		return this.v('uV', 'getUniformLocation', 'uniform', name, args);
 		// const u = this.uV[this.i][name] || this.gl.getUniformLocation(this.p[this.i], name);
 		// this.gl[`uniform${args.length}f`](u, ...args);
 		// return this.uV[this.i][name] = u;
 	}
-	// Set Uniforms from an array
-	ua(...a) {
+	/* Set Uniforms from an array **/
+	ua(a) {
 		a.forEach(u => this.unif(...u));
 	}
 	buff(
@@ -74,16 +74,23 @@ class Glp {
 		const {gl,p} = this;
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-		const FSIZE = data.BYTES_PER_ELEMENT;
+		// TODO: There might be some efficiencies to be gained by not doing ^ the above
+		// multiple times for multiple (interleaved) buffers
+
+		// Need to know how big each item is in the data
+		const sz = data.BYTES_PER_ELEMENT;
 		// Get the position attribute location (an id)
 		const id = gl.getAttribLocation(p[this.i], attr);
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
-		gl.vertexAttribPointer(id,	size, type,	norm, stride * FSIZE, offset * FSIZE);
+		gl.vertexAttribPointer(id,	size, type,	norm, stride * sz, offset * sz);
 		gl.enableVertexAttribArray(id);
+		return id;
 	}
-	ba(...a) {
-		// TODO
+	/** Set buffers from an array */
+	ba(data, a) {
+		a.forEach(b => this.buff(b[0], data, b[1]));
 	}
+	/** Clear the GL context */
 	clear() {
 		this.gl.clearColor(0., 0., 0., 1.); // Set the clear color (black)
 		// this.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the canvas AND the depth buffer.
@@ -93,7 +100,7 @@ class Glp {
 	draw({
 		uniforms = [],
 		i = this.i,
-		buffName, // = 'position',
+		buffs = [],
 		verts = STV,
 		vertSize = STNPV,
 		vertsToDraw,
@@ -101,11 +108,9 @@ class Glp {
 		clear = true,
 	}) {
 		const o = this;
-		o.use(i);
-		o.ua(...uniforms);
-		// TODO: convert to use "ba" to allow for setting buffers via an array
-		if (buffName) o.buff(buffName, verts, vertSize);
-		// o.buff(buffName, verts, vertSize);
+		o.use(i); // use program
+		o.ua(uniforms); // set uniforms
+		o.ba(verts, buffs); // set buffers
 		if (clear) { o.clear(); }
 		if (vertsToDraw === undefined) {
 			vertsToDraw = verts.length / vertSize;
