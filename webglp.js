@@ -10,6 +10,8 @@ const STV = new Float32Array([
 /** Screen Triangles Numbers per vertex */
 const STNPV = 2;
 
+const log = (...args) => console.log(...args);
+
 class Glp {
 	constructor(gl, p) {
 		Object.assign(this, {
@@ -21,7 +23,6 @@ class Glp {
 			aV: p.map(()=>({})),
 			uV: p.map(()=>({})),
 		});
-		console.log(this);
 	}
 	use(i) {
 		this.i = i;
@@ -129,9 +130,9 @@ const webglp = {
 	// 	gl.useProgram(program);
 	
 	// 	// Log compilation errors, if any
-	// 	console.log('vertex shader:', gl.getShaderInfoLog(vs) || 'OK');
-	// 	console.log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
-	// 	console.log('program:', gl.getProgramInfoLog(program) || 'OK');
+	// 	log('vertex shader:', gl.getShaderInfoLog(vs) || 'OK');
+	// 	log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
+	// 	log('program:', gl.getProgramInfoLog(program) || 'OK');
 
 	// 	return program;
 	// },
@@ -144,13 +145,13 @@ const webglp = {
 		shaders.map((t, i) => {
 			const s = webglp.compileShader(gl, S[i], t);
 			gl.attachShader(program, s);
-			console.log(L[i] + ' shader:', gl.getShaderInfoLog(s) || 'OK');
+			log(L[i] + ' shader:', gl.getShaderInfoLog(s) || 'OK');
 		});
 
 		gl.linkProgram(program);
 		gl.useProgram(program);
 	
-		console.log('program:', gl.getProgramInfoLog(program) || 'OK');
+		log('program:', gl.getProgramInfoLog(program) || 'OK');
 
 		return program;
 	},
@@ -167,7 +168,7 @@ const webglp = {
 		const id = (typeof attr === 'string') ? gl.getAttribLocation(program, attr) : attr;
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
 		gl.vertexAttribPointer(id,	size, type,	norm, stride, offset);
-		gl.enableVertexAttribArray(pos);
+		gl.enableVertexAttribArray(id);
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
 	// First param can either be a selector or a GL object
@@ -183,7 +184,7 @@ const webglp = {
 		));
 		const programs = await Promise.all(promises);
 		// const program = await webglp.loadShaders(urlsArr[0]).then((s) => webglp.compile(gl, s));
-		// console.log(programs);
+		// log(programs);
 		if (fullscreen) {
 			webglp.fullscreen(gl);
 		}
