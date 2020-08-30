@@ -74,7 +74,7 @@ class Glp {
 		const {gl,p} = this;
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-		const FSIZE = verticesColors.BYTES_PER_ELEMENT;
+		const FSIZE = data.BYTES_PER_ELEMENT;
 		// Get the position attribute location (an id)
 		const id = gl.getAttribLocation(p[this.i], attr);
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
