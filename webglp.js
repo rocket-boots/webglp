@@ -69,7 +69,7 @@ class Glp {
 			norm = false, // don't normalize the data
 			stride = 0, // offset in bytes (0 = move forward size * sizeof(type) each iteration to get the next position)
 			offset = 0, // start at beginning of buffer
-		}
+		} = {}
 	) {
 		const {gl,p} = this;
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -118,8 +118,8 @@ class Glp {
 		o.gl.drawArrays(type, 0, vertsToDraw);
 		return o;
 	}
-	drawAll(uniforms) { // only works with changing uniforms right now
-		this.p.forEach((p, i) => this.draw({ uniforms, i, clear: !i }));
+	drawAll(uniforms, buffs) { // only works with changing uniforms right now
+		this.p.forEach((p, i) => this.draw({ uniforms, buffs, i, clear: !i }));
 	}
 }
 
@@ -196,7 +196,7 @@ const webglp = {
 	},
 	// Do it all - Create canvas rendering context, load shaders, compile, and return the context
 	// First param can either be a selector or a GL object
-	init: async (a, urlsArr, { fullscreen }) => {
+	init: async (a, urlsArr, { fullscreen } = {}) => {
 		const gl = (typeof a === 'string') ? webglp.getRenderingContext(a) : a;
 		// Do aliases?
 		// const aliases = {attachShader: 'aS'};
