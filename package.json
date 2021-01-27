@@ -1,6 +1,6 @@
 {
   "name": "webglp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "webGL setup and rendering",
   "type": "module",
   "main": "./webglp.js",
@@ -11,8 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/rocket-boots/webglp.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "keywords": [
-    "webGL"
+    "webGL",
+    "canvas",
+    "graphics"
   ],
   "author": "Luke Nickerson",
   "license": "MIT",

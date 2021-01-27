@@ -30,6 +30,7 @@ class Glp {
 			// in a per-program array
 			aV: p.map(()=>({})),
 			uV: p.map(()=>({})),
+			bufferId: gl.createBuffer(),
 		});
 	}
 	/**
@@ -85,7 +86,12 @@ class Glp {
 	}
 	/** Set Uniforms from an array */
 	ua(a) {
-		a.forEach(u => this.unif(...u));
+		// Equivalent to:
+		// a.forEach(u => this.unif(...u));
+		const len = a.length;
+		for(let i = 0; i < len; i++) {
+			this.unif(...a[i]);
+		}
 	}
 	/** Set buffer attribute */
 	buff(
@@ -100,7 +106,7 @@ class Glp {
 		} = {}
 	) {
 		const {gl,p} = this;
-		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferId);
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
 		// TODO: There might be some efficiencies to be gained by not doing ^ the above
 		// multiple times for multiple (interleaved) buffers
@@ -116,7 +122,12 @@ class Glp {
 	}
 	/** Set buffers from an array */
 	ba(data, a) {
-		a.forEach(b => this.buff(b[0], data, b[1]));
+		// Equivalent to:
+		// a.forEach(b => this.buff(b[0], data, b[1]));
+		const len = a.length;
+		for(let i = 0; i < len; i++) {
+			this.buff(a[i][0], data, a[i][1])
+		}
 	}
 	/** Clear the GL context */
 	clear() {
@@ -135,17 +146,16 @@ class Glp {
 		type = this.gl.TRIANGLES,
 		clear = true,
 	}) {
-		const o = this;
-		o.use(i); // use program
-		o.ua(uniforms); // set uniforms
-		o.ba(verts, buffs); // set buffers
-		if (clear) { o.clear(); }
+		this.use(i); // use program
+		this.ua(uniforms); // set uniforms
+		this.ba(verts, buffs); // set buffers
+		if (clear) { this.clear(); }
 		// Calculate verts to draw if not defined
 		if (vertsToDraw === undefined) {
 			vertsToDraw = verts.length / vertSize;
 		}
-		o.gl.drawArrays(type, 0, vertsToDraw);
-		return o;
+		this.gl.drawArrays(type, 0, vertsToDraw);
+		return this;
 	}
 	/** Draw all programs (in order) */
 	drawAll(opt = {}) {
